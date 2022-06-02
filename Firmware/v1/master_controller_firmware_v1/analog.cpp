@@ -103,27 +103,29 @@ uint16_t readCurrent(){
 static uint16_t readCurrent_raw(){
 	cli();
 	uint16_t res = 0;
-	// PD6 - 20 - CS - O
-	// PD7 - 21 - DAT - I
-	// PA0 - 40 - CLK - O
-	DDRD |= (1<<DDD6);
-	DDRD &= ~(1<<DDD7);
-	PORTD |= (1<<PORTD7);
-	DDRA |= (1<<DDA0);
+	// curr	
+	// PD7 - 21 - CS - O
+	// PB6 -  7 - DAT - I
+	// PB7 -  8 - CLK - O
+	
+	DDRB |= (1<<DDB7); // clock
+	DDRB &= ~(1<<DDD6); //miso
+	PORTD |= (1<<PORTD6); //pullup
+	DDRD |= (1<<DDD7);//cs
 	
 	// SET CS low and clk high
-	PORTD &= ~(1<<PORTD6);
-	PORTA |= 1<<PORTA0;
+	PORTD &= ~(1<<PORTD7);
+	PORTB |= 1<<PORTB7;
 	
 	for(uint8_t i =0;i<16;i++){
 		_delay_us(10);
-		PORTA &= ~(1<<PORTA0);
+		PORTB &= ~(1<<PORTB7);
 		_delay_us(10);
 		res <<= 1;
-		res |= (PIND & (1<<PIND7)) != 0 ? 0x01 : 0;
-		PORTA |= 1<<PORTA0;
+		res |= (PINB & (1<<PINB6)) != 0 ? 0x01 : 0;
+		PORTB |= 1<<PORTB7;
 	}
-	PORTD |= (1<<PORTD6);
+	PORTD |= (1<<PORTD7);
 	sei();
 	return (res & 0x0fff);
 }
