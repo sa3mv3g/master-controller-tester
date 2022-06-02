@@ -126,20 +126,57 @@ fixedPoint_t getNumber(fixedPoint_t initval, uint8_t hl){
 
 void saveCallibrationData(){
 	unsigned int address = 0;
-	
+	EEPROM_write(address++, 0xaa);
 	callibration_data_bytes.data = voltage_callibration;
-	for(uint8_t i = 0;i < 32;i++) EEPROM_write(address++, callibration_data_bytes.bytes[i]);
+	for(uint8_t i = 0;i < 32;i++) 
+	{
+		EEPROM_write(address++, callibration_data_bytes.bytes[i]);
+	}
 	callibration_data_bytes.data = current_callibration;
-	for(uint8_t i = 0;i < 32;i++) EEPROM_write(address++, callibration_data_bytes.bytes[i]);
+	for(uint8_t i = 0;i < 32;i++) 
+	{
+		EEPROM_write(address++, callibration_data_bytes.bytes[i]);
+	}
 }
 
 void loadCallibrationData(){
 	unsigned int adderss = 0;
-	for(unsigned int i = 0;  i < 32; i++){
+	uint8_t header = EEPROM_read(adderss++);
+	if(header != 0xaa)
+	{
+		voltage_callibration.in_from.number = 0;
+		voltage_callibration.in_from.decPos = 0;
+		
+		voltage_callibration.in_to.number = 1023;
+		voltage_callibration.in_to.decPos = 0;
+		
+		voltage_callibration.out_from.number = 0;
+		voltage_callibration.out_from.decPos = 0;
+		
+		voltage_callibration.out_to.number = 1023;
+		voltage_callibration.out_to.decPos = 0;
+		
+		current_callibration.in_from.number = 0;
+		current_callibration.in_from.decPos = 0;
+		
+		current_callibration.in_to.number = 1023;
+		current_callibration.in_to.decPos = 0;
+		
+		current_callibration.out_from.number = 0;
+		current_callibration.out_from.decPos = 0;
+		
+		current_callibration.out_to.number = 1023;
+		current_callibration.out_to.decPos = 0;
+		
+		saveCallibrationData();
+	}
+	for(unsigned int i = 0;  i < 32; i++)
+	{
 		callibration_data_bytes.bytes[i] = EEPROM_read(adderss++);
 	}
 	voltage_callibration = callibration_data_bytes.data;
-	for(unsigned int i = 0;  i < 32; i++){
+	for(unsigned int i = 0;  i < 32; i++)
+	{
 		callibration_data_bytes.bytes[i] = EEPROM_read(adderss++);
 	}
 	current_callibration = callibration_data_bytes.data;
