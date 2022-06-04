@@ -159,13 +159,13 @@ void loadCallibrationData(){
 		current_callibration.in_from.number = 0;
 		current_callibration.in_from.decPos = 0;
 		
-		current_callibration.in_to.number = 1023;
+		current_callibration.in_to.number = 4095;
 		current_callibration.in_to.decPos = 0;
 		
 		current_callibration.out_from.number = 0;
 		current_callibration.out_from.decPos = 0;
 		
-		current_callibration.out_to.number = 1023;
+		current_callibration.out_to.number = 4095;
 		current_callibration.out_to.decPos = 0;
 		
 		saveCallibrationData();

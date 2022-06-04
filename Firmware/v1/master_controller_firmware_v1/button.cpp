@@ -32,7 +32,7 @@ void Buttons_scan(){
 	static bool pb3t = 1;
 	static bool pb4t = 1;
 	
-	bool b1t = PIND & (1 << PIND5);
+	bool b1t = PIND & (1 << PIND6);
 	bool b2t = PIND & (1 << PIND4);
 	bool b3t = PIND & (1 << PIND3);
 	bool b4t = PIND & (1 << PIND2);

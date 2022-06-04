@@ -73,7 +73,7 @@ void UART_send(const fixedPoint_t * const n);
 *******************************************************/
 void conuting();
 void TM1638_Init();
-void SPI_MasterTransmit(char cData);
+uint8_t SPI_MasterTransmit(char cData);
 void TM1638_SendCommand(char data);
 void TM1638_DisplayNumber(uint8_t index, uint8_t num, bool decimal = false );
 void TM1638_DisplayNumber_raw(uint8_t index, uint8_t num);
