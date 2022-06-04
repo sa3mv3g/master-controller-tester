@@ -94,13 +94,17 @@ uint16_t readCurrent(){
 	uint32_t data = 0;
 	// change word ordering from LSB first to MSB first
 	SPCR &= ~_BV(DORD);
-	for(uint16_t i =0; i< 128;i++){
+	// increase speed 
+	SPCR &= ~(_BV(SPR0)|_BV(SPR1));
+	for(uint16_t i =0; i< 1024;i++){
 		data += readCurrent_raw();
 		_delay_us(1);
 	}
 	// change word ordering from MSB first to LSB first 
 	// as required by TM1638
 	SPCR |= _BV(DORD);
-	data /= 128;
+	// switch to slow speed
+	SPCR |= (_BV(SPR0)|_BV(SPR1));
+	data /= 1024;
 	return data;
 }
