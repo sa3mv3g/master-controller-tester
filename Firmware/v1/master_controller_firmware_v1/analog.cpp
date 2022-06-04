@@ -73,32 +73,6 @@ uint16_t readCurrent2(){
 uint16_t readVoltage(){
 	return VolatageADCvalue;	
 }
-/*
-uint16_t readCurrent(){
-	cli();
-	// CS* = PD2 ; OUTPUT
-	// DATA = PD3 ; INPUT
-	// CLK = PD4 ; OUTPUT
-	uint16_t res = 0;
-	DDRD |= (1<<DDD2) | (1<<DDD4);
-	DDRD &= ~(1<<DDD3);
-	// SET CS low and clk high
-	PORTD |= (1<<PORTD4);
-	PORTD &= ~(1<<PORTD2);
-	//wait
-	for(uint8_t i =0;i<16;i++){
-		_delay_us(10);
-		PORTD &= ~(1<<PORTD4);
-		res <<= 1;
-		res |= (PIND & (1<<PIND3)) != 0 ? 0x01 : 0;
-		_delay_us(10);
-		PORTD |= (1<<PORTD4);
-	}
-	PORTD |= (1<<PORTD2);
-	sei();
-	return (res & 0x0fff);
-}
-*/
 
 static uint16_t readCurrent_raw(){
 	cli();
@@ -108,23 +82,9 @@ static uint16_t readCurrent_raw(){
 	// PB6 -  7 - DAT - I
 	// PB7 -  8 - CLK - O
 	
-	DDRB |= (1<<DDB7); // clock
-	DDRB &= ~(1<<DDD6); //miso
-	PORTD |= (1<<PORTD6); //pullup
-	DDRD |= (1<<DDD7);//cs
-	
-	// SET CS low and clk high
 	PORTD &= ~(1<<PORTD7);
-	PORTB |= 1<<PORTB7;
-	
-	for(uint8_t i =0;i<16;i++){
-		_delay_us(10);
-		PORTB &= ~(1<<PORTB7);
-		_delay_us(10);
-		res <<= 1;
-		res |= (PINB & (1<<PINB6)) != 0 ? 0x01 : 0;
-		PORTB |= 1<<PORTB7;
-	}
+	res = SPI_MasterTransmit(0xaa);
+	res = (res << 8) | SPI_MasterTransmit(0xaa);
 	PORTD |= (1<<PORTD7);
 	sei();
 	return (res & 0x0fff);
@@ -132,10 +92,15 @@ static uint16_t readCurrent_raw(){
 
 uint16_t readCurrent(){
 	uint32_t data = 0;
-	for(uint8_t i =0; i< 64;i++){
+	// change word ordering from LSB first to MSB first
+	SPCR &= ~_BV(DORD);
+	for(uint16_t i =0; i< 128;i++){
 		data += readCurrent_raw();
 		_delay_us(1);
 	}
-	data /= 64;
+	// change word ordering from MSB first to LSB first 
+	// as required by TM1638
+	SPCR |= _BV(DORD);
+	data /= 128;
 	return data;
 }

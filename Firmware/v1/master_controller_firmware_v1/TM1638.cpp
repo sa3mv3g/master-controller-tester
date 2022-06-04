@@ -14,13 +14,14 @@
 
 const static uint8_t Segment_digits[] = { 0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f };
 
-void SPI_MasterTransmit(char cData)
+uint8_t SPI_MasterTransmit(char cData)
 {
 	/* Start transmission */
 	SPDR = cData;
 	/* Wait for transmission complete */
 	while(!(SPSR & (1<<SPIF)))
 	;
+	return SPDR;
 }
 
 void TM1638_Init(){
@@ -28,84 +29,6 @@ void TM1638_Init(){
 	PORTB |= 1<<PORTB4;
 	SPCR |= (1<<SPE)|(1<<MSTR)|(1<<SPR0)|(1<<SPR1)|(1<<DORD);
 }
-
-/*	
-void shiftOut(uint8_t data){
-	for (char i=0;i<8;i++)
-	{
-		if(data & 0x01) PORTB |= 1<<PORTB5;
-		else PORTB &= ~(1<<PORTB5);
-		PORTB |= 1<<PORTB7;
-		_delay_us(10);
-		PORTB &= ~(1<<PORTB7);
-		_delay_us(10);
-		data >>= 1;
-	}
-}
-void TM1638_SendCommand(char data){
-	PORTB &= ~(1<<PORTB4);
-	_delay_us(10);
-	shiftOut(data);
-	PORTB |= 1<<PORTB4;
-	_delay_us(10);
-	
-}
-void TM1638_reset(){
-	TM1638_SendCommand(0x40);
-	PORTB &= ~(1<<PORTB4);
-	_delay_us(10);
-	shiftOut(0xc0);
-	
-	for(uint8_t i = 0; i < 16; i++)
-
-	{
-
-		shiftOut(0x00);
-
-	}
-
-	PORTB |= 1<<PORTB4;
-	_delay_us(10);
-	TM1638_SendCommand(0x8f);
-}
-
-void conuting(){
-	
-
-	uint8_t digits[] = { 0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f };
-
-
-
-
-	static uint8_t digit = 0;
-
-
-
-
-	TM1638_SendCommand(0x40);
-	
-	PORTB &= ~(1<<PORTB4);
-	_delay_us(10);
-
-	shiftOut(0xc0);
-
-	for(uint8_t position = 0; position < 8; position++)
-
-	{
-
-		shiftOut( digits[digit]);
-
-		shiftOut( 0x00);
-
-	}
-
-
-	PORTB |= 1<<PORTB4;
-	_delay_us(10);
-
-	
-}
-*/
 
 void TM1638_SendCommand(char data){
 	_delay_us(10);

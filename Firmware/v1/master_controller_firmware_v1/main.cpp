@@ -59,11 +59,14 @@ int main()
 	mystdout.get = NULL;
 	mystdout.udata = 0;
 	
+	DDRB |= (1<<DDB7); // clock
+	DDRD |= (1<<DDD7);//cs
+	PORTB |= 1<<PORTB6;
 	
-	#ifdef DEBUG
-	DDRD |= (1<<DDD0) | (1<<DDD1) | (1<<DDD6) | (1<<DDD7);
-	PORTD &= ~((1<<PORTD0)|(1<<PORTD1)|(1<<PORTD6)|(1<<PORTD7));
-	#endif
+	PORTD &= ~(1<<PORTD7);
+	PORTB |= 1<<PORTB7;
+	
+	
 	sei();
 	loadCallibrationData();
 	TMR0_Init();
@@ -132,7 +135,7 @@ int main()
 		TM1638_DisplayNumber(curr, 0,4,2);
 		TM1638_DisplayNumber(voll, 5,3,1);
 		TM1638_DisplayNumber_raw(4,0);
-		//printf("%.2f\n", (double)fixtoflo(curr));
+		printf("%.2f\n", (double)fixtoflo(curr));
 	}
 	
 
